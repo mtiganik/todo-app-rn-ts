@@ -7,14 +7,20 @@ import { SvgXml } from "react-native-svg";
 import axios from "axios"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { UserData } from "../models";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../navigation";
 // import { useUser } from "../context/UserContext";
 // import { storeData } from "../utils/storage";
+
+type LoginScreenProps = {
+  navigation: StackNavigationProp<RootStackParamList, 'Login'>;
+};
 
 
 const url = "https://taltech.akaver.com/api/v1/Account/Login"
 
 
-const LoginScreen: React.FC = () => {
+const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
   const [email, setEmail] = useState("")
   const [emailError, setEmailError] = useState("")
   const [password, setPassword] = useState("")
@@ -33,7 +39,6 @@ const LoginScreen: React.FC = () => {
         })
         const responseData = response.data;
         await AsyncStorage.setItem('userData', JSON.stringify(responseData))
-        // console.log(responseData)
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + responseData.token
         const user: UserData = {
           token: responseData.token,
@@ -51,7 +56,6 @@ const LoginScreen: React.FC = () => {
         if (axios.isAxiosError(error)) {
           if (error.response && error.response.data && error.response.data.messages)
             console.error(error.response.data.messages)
-          //setServerResponse("Error", error.response.data.messages)
         }
         setServerResponse(' An error occured while loggin in.')
       }
