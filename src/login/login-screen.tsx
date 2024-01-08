@@ -27,6 +27,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
   const [serverResponse, setServerResponse] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [user, setUser] = useState<UserData | undefined>(undefined)
+  console.log(navigation)
+  console.log("2nav")
   const handlePress = async () => {
     if (!/\S+@\S+\.\S+/.test(email)) {
       setEmailError('Email is invalid')
@@ -110,11 +112,11 @@ return (
 
         <Text>
           Don't have an account?{" "}
-          {/* <Text style={{ color: 'blue' }}
+          <Text style={{ color: 'blue' }}
             onPress={() => navigation.navigate("Register")}>
             Register account
 
-          </Text> */}
+          </Text>
         </Text>
       </View>
     </ScrollView>
