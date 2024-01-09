@@ -8,6 +8,8 @@ import { getAllPrioritiesService } from '../service/priority-service';
 import { getAllTasksService } from '../service/task-service';
 import { getUserData } from '../utils/storage-utils';
 import { commonStyles } from '../utils/styles';
+import { getDefaultCategory, getDefaultPriority } from '../utils/default-entities';
+import TaskItem from './task-item';
 type HomeScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Home'>;
 };
@@ -34,13 +36,46 @@ const HomeScreen:React.FC<HomeScreenProps> = ({navigation}) => {
     }
     fetchData()
   }, [])
+
+  const getCategoryById = (categoryId: string): Category => {
+    var category = categories.find(category => category.id === categoryId)
+    if(category){
+      return category 
+    }else {
+      return getDefaultCategory()
+    }
+  }
+  const getPriorityById = (priorityId: string): Priority => {
+    var priority =  priorities.find(priority => priority.id === priorityId)
+    if(priority){
+      return priority
+    }else{
+      return getDefaultPriority()
+    }
+  }
+  
+
+  const updateTask = (taskToUpdate: Task) => {
+    console.log("On update")
+  } 
+
+  const deleteTask = (taskToDelete:Task) => {
+    console.log("On delete")
+  }
+
   return(
     <View>
       <Text>Hello {userData?.firstName} {userData?.lastName}</Text>
       {tasks.length > 0 && categories.length > 0 && priorities.length > 0 && (
         tasks.map((currTask) => (
           <Fragment key={currTask.id}>
-            <Text>{currTask.taskName}</Text>
+            <TaskItem 
+            task={currTask} 
+            taskCategory={getCategoryById(currTask.todoCategoryId)} 
+            taskPriority={getPriorityById(currTask.todoPriorityId)} 
+            onDelete={() => deleteTask(currTask)} 
+            onUpdate={(newTask) => updateTask(newTask)}            
+            />
           </Fragment>
         ))
       )}
