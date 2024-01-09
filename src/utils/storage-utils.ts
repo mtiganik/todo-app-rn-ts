@@ -9,7 +9,7 @@ export const saveUserData = async (userData: UserData) => {
   }
 };
 
-export const getUserData = async () => {
+export const getUserData = async ():Promise<UserData | null> => {
   try {
     const userData = await AsyncStorage.getItem('userData');
     return userData ? JSON.parse(userData) : null;

@@ -1,99 +1,53 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import React from 'react'
 import { RootStackParamList } from '../navigation';
-import { removeUserData } from '../utils/storage-utils';
+import React, {useState,useEffect,useContext, Fragment} from 'react'
 import { View, Text, Button, Alert } from 'react-native';
-import { EditIcon, ShowPassword, SettingsIcon, HomeCategoryIcon, WorkCategoryIcon,SchoolCategoryIcon,UnknownCategoryIcon, OtherCategoryIcon } from '../utils/svg-images';
-import { SvgXml } from 'react-native-svg';
+import { UserData, Task, Category, Priority } from '../models';
+import { getAllCategoriesService } from '../service/category-service';
+import { getAllPrioritiesService } from '../service/priority-service';
+import { getAllTasksService } from '../service/task-service';
+import { getUserData } from '../utils/storage-utils';
+import { commonStyles } from '../utils/styles';
 type HomeScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Home'>;
 };
 
 
 const HomeScreen:React.FC<HomeScreenProps> = ({navigation}) => {
-  const handleLogout = async () => {
-    // Remove user data from AsyncStorage on logout
-    await removeUserData();
-    navigation.navigate('Login');
-  };
-
-  const showMenuOptions = () => {
-    Alert.alert(
-      'Menu Options',
-      'Choose an option',
-      [
-        {
-          text: 'Categories',
-          onPress: () => navigation.navigate('Categories'),
-        },
-        {
-          text: 'Priorities',
-          onPress: () => navigation.navigate('Priorities'),
-        },
-        {
-          text: 'Logout',
-          onPress: handleLogout,
-        },
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-      ],
-      { cancelable: true }
-    );
-  };
-
-
+  const [userData, setUserData] = useState<UserData | null>()
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [priorities, setPriorities] = useState<Priority[]>([])
+  const [serverError, setServerError] = useState("")
+  useEffect(() => {
+    const fetchData = async() => {
+      try {
+        console.log("Start of fetching")
+        setUserData(await getUserData())
+        setCategories(await getAllCategoriesService());
+        setPriorities(await getAllPrioritiesService())
+        setTasks(await getAllTasksService())
+        console.log("Fetching complete")
+      } catch (error) {
+        console.error("error ", error)
+      }
+    }
+    fetchData()
+  }, [])
   return(
     <View>
-      <Text>Home Screen</Text>
-      <Button title="Show Menu" onPress={showMenuOptions} />
-      <SvgXml
-            xml={EditIcon}
-            width={24}
-            height={24}
-            stroke="rgb(0,250,0)"
-          />
-      <SvgXml
-            xml={ShowPassword}
-            width={24}
-            height={24}
-          />
-      <SvgXml
-            xml={SettingsIcon}
-            width={24}
-            height={24}
-          />
-      <SvgXml
-            xml={HomeCategoryIcon}
-            width={24}
-            height={24}
-          />
-      <SvgXml
-            xml={WorkCategoryIcon}
-            width={24}
-            height={24}
-          />
-      <SvgXml
-            xml={SchoolCategoryIcon}
-            width={24}
-            height={24}
-          />
-      <SvgXml
-            xml={UnknownCategoryIcon}
-            width={36}
-            height={36}
-          />
-      <SvgXml
-            xml={OtherCategoryIcon}
-            width={24}
-            height={24}
-          />
+      <Text>Hello {userData?.firstName} {userData?.lastName}</Text>
+      {tasks.length > 0 && categories.length > 0 && priorities.length > 0 && (
+        tasks.map((currTask) => (
+          <Fragment key={currTask.id}>
+            <Text>{currTask.taskName}</Text>
+          </Fragment>
+        ))
+      )}
+      <Text style={commonStyles.errorText}>{serverError}</Text>
 
-      <Button title="Logout" onPress={handleLogout} />
     </View>
   )
 }
-//  { EditIcon, ShowPassword, SettingsIcon, HomeCategoryIcon, WorkCategoryIcon,SchoolCategoryIcon,UnknownCategoryIcon, OtherCategoryIcon } from '../utils/svg-images';
 
 export default HomeScreen
