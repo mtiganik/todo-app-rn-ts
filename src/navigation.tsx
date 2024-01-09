@@ -9,8 +9,9 @@ import AddTaskScreen from './home/add-task-screen';
 import CategoryScreen from './home/category/category-screen';
 import PriorityScreen from './home/priority/priority-screen';
 import EditTaskScreen from './home/edit-task-screen';
-import { Task } from 'react-native';
+import { Button, Task } from 'react-native';
 import TestPage from './home/test-page';
+import { NavigationButton } from './utils/navigation-button';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -49,20 +50,15 @@ const Navigation:React.FC = () => {
       <Stack.Navigator>
           <Stack.Screen name="Login" component={LoginScreen} options={{headerBackVisible:false}}/>
           <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="Home" component={HomeScreen} options={{headerBackVisible:false}}/>
           <Stack.Screen name="AddTask" component={AddTaskScreen} />
           <Stack.Screen name="EditTask" component={EditTaskScreen} />
           <Stack.Screen name="Categories" component={CategoryScreen} />
           <Stack.Screen name="Priorities" component={PriorityScreen} />
           <Stack.Screen name="TestPage" component={TestPage} />
-        {!userToken ? (
-          <>
-          </>
-        ) : (
-          // Private pages
-          <>
-          </>
-        )}
+          <Stack.Screen name="Home" component={HomeScreen} options={({navigation}) => ({
+              headerBackVisible:false, 
+              headerRight: () =>(<NavigationButton navigation={navigation}/> )
+          })}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
