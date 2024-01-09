@@ -2,13 +2,14 @@ import { View, Text, TextInput, ScrollView, StyleSheet, Button } from "react-nat
 import { commonStyles, loginScreenStyles } from "../utils/styles";
 import { LinearGradient } from 'expo-linear-gradient';
 import { ShowPassword, HidePassword } from "../utils/svg-images"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SvgXml } from "react-native-svg";
 import axios from "axios"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { UserData } from "../models";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation";
+import { getUserData, saveUserData } from "../utils/storage-utils";
 // import { useUser } from "../context/UserContext";
 // import { storeData } from "../utils/storage";
 
@@ -26,7 +27,17 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
   const [password, setPassword] = useState("")
   const [serverResponse, setServerResponse] = useState("")
   const [showPassword, setShowPassword] = useState(false)
-  const [user, setUser] = useState<UserData | undefined>(undefined)
+
+  useEffect(() => {
+    const fetchData = async() =>{
+      const userData = await getUserData()
+      if(userData){
+        navigation.navigate("Home")
+      } 
+
+    }
+    fetchData()
+  }, [])
   console.log(navigation)
   console.log("2nav")
   const handlePress = async () => {
@@ -40,8 +51,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
           password: password
         })
         const responseData = response.data;
-        await AsyncStorage.setItem('userData', JSON.stringify(responseData))
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + responseData.token
+
         const user: UserData = {
           token: responseData.token,
           refreshToken: responseData.refreshToken,
@@ -49,9 +59,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
           lastName: responseData.lastName,
           email: email
         }
-        setUser(user)
-
-        // navigation.navigate('Home');
+        await saveUserData(user)
+        navigation.navigate('Home');
 
       } catch (error) {
         console.error('AsyncStorage Error:', error);

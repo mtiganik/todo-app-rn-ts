@@ -9,6 +9,8 @@ import { SvgXml } from 'react-native-svg';
 import { HidePassword, ShowPassword } from '../utils/svg-images';
 import axios from 'axios';
 import { isStrongPassword } from '../utils/password-validation';
+import { saveUserData } from '../utils/storage-utils';
+import InitializeNewUser from './initialize-new-user-data';
 
 type RegisterScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Register'>;
@@ -22,12 +24,12 @@ const inputInitials = {
   confirmPassword: ""
 }
 
-let inputErrorsInitial = {
-  firstNameError: "",
-  lastNameError: "",
-  emailError: "",
-  passwordError: "",
-  confirmPasswordError: "",
+let inputErrorsInitial:inputErrors  = {
+  firstNameError: null,
+  lastNameError: null,
+  emailError: null,
+  passwordError: null,
+  confirmPasswordError: null,
 }
 
 interface inputErrors {
@@ -46,7 +48,7 @@ const RegisterScreen:React.FC<RegisterScreenProps> = ({navigation}) => {
   const [serverError, setServerError] = useState("")
   const [isFormValid, setIsFormValid] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [user, setUser] = useState<UserData | undefined>(undefined)
+  // const [user, setUser] = useState<UserData | undefined>(undefined)
   
   const handlePress =async () => {
     validateForm();
@@ -61,19 +63,17 @@ const RegisterScreen:React.FC<RegisterScreenProps> = ({navigation}) => {
         });
         if(response && response.data){
           const responseData = response.data;
-
-          setUser({
-            ...user,
-            token: responseData.token,
-            refreshToken: responseData.refreshToken,
+          const user : UserData = {
             firstName: responseData.firstName,
             lastName: responseData.lastName,
-            email: input.email
-          })
-          axios.defaults.headers.common['Authorization'] = 'Bearer ' + responseData.token
-
-          //InitializeNewUser()
-
+            email: input.email,
+            token: responseData.token,
+            refreshToken: responseData.refreshToken
+          }
+          await saveUserData(user)
+          console.log("user Data saved")
+          await InitializeNewUser()
+          console.log("initialization finished")
           navigation.navigate('Home');
 
         }else{
@@ -94,6 +94,7 @@ const RegisterScreen:React.FC<RegisterScreenProps> = ({navigation}) => {
 
   const validateForm = () => {
     let errors:inputErrors = inputErrorsInitial
+    console.log("start of validation")
     if (!input.firstName){
       errors.firstNameError = "First name is required"
     }
@@ -118,7 +119,9 @@ const RegisterScreen:React.FC<RegisterScreenProps> = ({navigation}) => {
       errors.confirmPasswordError = 'confirm password do not match actual password'
     }
     setInputErrors(errors)
-    setIsFormValid(Object.keys(errors).length === 0)
+    // console.log(errors)
+    const isFormValid = Object.values(errors).every((error) => error === null)
+    setIsFormValid(isFormValid)
   }
 
 
