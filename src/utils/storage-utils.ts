@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserData } from '../models';
 
 export const saveUserData = async (userData: object) => {
   try {
