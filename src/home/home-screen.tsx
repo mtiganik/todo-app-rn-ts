@@ -65,8 +65,9 @@ const HomeScreen:React.FC<HomeScreenProps> = ({navigation}) => {
   } 
 
   const deleteTask = (taskToDelete:Task) => {
-    console.log("On delete")
-  }
+    const updatedTask = tasks.filter((task) => task.id !== taskToDelete.id)
+    setTasks(updatedTask)
+    }
   const handleAdd = (newTask:Task) => {
     setTasks([newTask, ...tasks])
     setAddTaskVisible(false)

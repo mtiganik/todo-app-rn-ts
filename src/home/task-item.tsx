@@ -5,6 +5,7 @@ import { formatDateToUI } from "../utils/format-date";
 import { SvgXml } from "react-native-svg";
 import { CheckSign, EditIcon, GarbagePin } from "../utils/svg-images";
 import EditTaskScreen from "./edit-task-screen";
+import { deleteTaskService, editTaskService } from "../service/task-service";
 
 interface TaskItemProps {
   task: Task;
@@ -17,10 +18,16 @@ interface TaskItemProps {
 const TaskItem:React.FC<TaskItemProps> = ({task,taskCategory,taskPriority, onDelete, onUpdate}) => {
   const [isCompleted, setIsCompleted] = useState(task.isCompleted)
   const [editViewVisible, setEditViewVisible] = useState(false)
-  const handleMarkAsDone = () => { 
+
+  const handleMarkAsDone = async() => { 
     const updatedTask = {...task, isCompleted: !task.isCompleted, syncDt: new Date().toISOString()}
-    setIsCompleted(!isCompleted)
-    onUpdate(updatedTask)
+    var result = await editTaskService(updatedTask)
+    if(result >= 200 && result < 300){
+      setIsCompleted(!isCompleted)
+      onUpdate(updatedTask)
+    }else{
+      console.error("Error syncing data")
+    }
   }
 
   const handleShowEditView = () => {
@@ -31,8 +38,12 @@ const TaskItem:React.FC<TaskItemProps> = ({task,taskCategory,taskPriority, onDel
     onUpdate(newTask)
   } 
 
-  const handleDelete = () => {
-    onDelete()
+  const handleDelete = async() => {
+    const result = await deleteTaskService(task.id)
+    if(result>=200 && result < 300){
+      onDelete()
+
+    }
   }
   return(
     <View>
