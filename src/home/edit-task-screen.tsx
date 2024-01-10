@@ -72,8 +72,7 @@ const EditTaskScreen: React.FC<EditScreenProps> = ({ task, currCat, currPri, onE
       <Text style={styles.baseText}>Task name</Text>
       <TextInput
         style={styles.textInputStyle}
-        placeholder={task.taskName}
-        value={task.taskName}
+        value={taskName}
         onChangeText={setTaskName}
       />
       <Text style={styles.baseText}>Category</Text>

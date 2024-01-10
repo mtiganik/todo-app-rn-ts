@@ -57,6 +57,9 @@ const HomeScreen:React.FC<HomeScreenProps> = ({navigation}) => {
 
   const updateTask = (taskToUpdate: Task) => {
     console.log("On update")
+    const updatedTask = tasks.map((task) => 
+    task.id === taskToUpdate.id ? taskToUpdate : task)
+    setTasks(updatedTask)
   } 
 
   const deleteTask = (taskToDelete:Task) => {

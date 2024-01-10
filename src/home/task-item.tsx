@@ -25,9 +25,9 @@ const TaskItem:React.FC<TaskItemProps> = ({task,taskCategory,taskPriority, onDel
 
   const handleShowEditView = () => {
     setEditViewVisible(!editViewVisible)
-    // onUpdate(task)
   }
   const handleEdit = (newTask:Task) => {
+    setEditViewVisible(false)
     onUpdate(newTask)
   } 
 
