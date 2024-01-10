@@ -10,11 +10,10 @@ import { getUserData } from '../utils/storage-utils';
 import { commonStyles } from '../utils/styles';
 import { getDefaultCategory, getDefaultPriority } from '../utils/default-entities';
 import TaskItem from './task-item';
+import { CategoryContext, PriorityContext } from '../utils/context';
 type HomeScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Home'>;
 };
-export const CategoryContext = createContext<Category[]>([])
-export const PriorityContext = createContext<Priority[]>([])
 
 const HomeScreen:React.FC<HomeScreenProps> = ({navigation}) => {
   const [userData, setUserData] = useState<UserData | null>()
