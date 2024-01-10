@@ -4,6 +4,7 @@ import {Task, Category, Priority } from "../models";
 import { formatDateToUI } from "../utils/format-date";
 import { SvgXml } from "react-native-svg";
 import { CheckSign, EditIcon, GarbagePin } from "../utils/svg-images";
+import EditTaskScreen from "./edit-task-screen";
 
 interface TaskItemProps {
   task: Task;
@@ -15,20 +16,26 @@ interface TaskItemProps {
 
 const TaskItem:React.FC<TaskItemProps> = ({task,taskCategory,taskPriority, onDelete, onUpdate}) => {
   const [isCompleted, setIsCompleted] = useState(task.isCompleted)
+  const [editViewVisible, setEditViewVisible] = useState(false)
   const handleMarkAsDone = () => { 
     const updatedTask = {...task, isCompleted: !task.isCompleted, syncDt: new Date().toISOString()}
     setIsCompleted(!isCompleted)
     onUpdate(updatedTask)
   }
 
-  const handleEdit = () => {
-    onUpdate(task)
+  const handleShowEditView = () => {
+    setEditViewVisible(!editViewVisible)
+    // onUpdate(task)
   }
+  const handleEdit = (newTask:Task) => {
+    onUpdate(newTask)
+  } 
 
   const handleDelete = () => {
     onDelete()
   }
   return(
+    <View>
     <View 
     style={[styles.container,{
       backgroundColor: isCompleted ? "springgreen" : "orangered"
@@ -54,7 +61,7 @@ const TaskItem:React.FC<TaskItemProps> = ({task,taskCategory,taskPriority, onDel
             <Text style={styles.buttonText}>MARK DONE</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleEdit}>
+        <TouchableOpacity onPress={handleShowEditView}>
           <View style={styles.button} >
             <SvgXml
               xml={EditIcon}
@@ -77,6 +84,15 @@ const TaskItem:React.FC<TaskItemProps> = ({task,taskCategory,taskPriority, onDel
 
       </View>
 
+    </View>
+    {editViewVisible && (
+      <EditTaskScreen 
+      task={task} 
+      currCat={taskCategory} 
+      currPri={taskPriority} 
+      onEdit={ (newTask) => handleEdit(newTask) }      
+      />
+    )}
     </View>
 
   )

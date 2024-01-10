@@ -1,6 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation';
-import React, {useState,useEffect,useContext, Fragment} from 'react'
+import React, {useState,useEffect,useContext, Fragment, createContext} from 'react'
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { UserData, Task, Category, Priority } from '../models';
 import { getAllCategoriesService } from '../service/category-service';
@@ -13,7 +13,8 @@ import TaskItem from './task-item';
 type HomeScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Home'>;
 };
-
+export const CategoryContext = createContext<Category[]>([])
+export const PriorityContext = createContext<Priority[]>([])
 
 const HomeScreen:React.FC<HomeScreenProps> = ({navigation}) => {
   const [userData, setUserData] = useState<UserData | null>()
@@ -64,26 +65,30 @@ const HomeScreen:React.FC<HomeScreenProps> = ({navigation}) => {
   }
 
   return(
-    <View>
-      <Text>Hello {userData?.firstName} {userData?.lastName}</Text>
-      {tasks.length > 0 && categories.length > 0 && priorities.length > 0 && (
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-         {tasks.map((currTask) => (
-          <Fragment key={currTask.id}>
-            <TaskItem 
-            task={currTask} 
-            taskCategory={getCategoryById(currTask.todoCategoryId)} 
-            taskPriority={getPriorityById(currTask.todoPriorityId)} 
-            onDelete={() => deleteTask(currTask)} 
-            onUpdate={(newTask) => updateTask(newTask)}            
-            />
-          </Fragment>
-        ))}
-        </ScrollView>
-      ) }
-      <Text style={commonStyles.errorText}>{serverError}</Text>
+    <CategoryContext.Provider value={categories}>
+      <PriorityContext.Provider value={priorities}>
+        <View>
+          <Text>Hello {userData?.firstName} {userData?.lastName}</Text>
+          {tasks.length > 0 && categories.length > 0 && priorities.length > 0 && (
+            <ScrollView contentContainerStyle={styles.scrollViewContent}>
+              {tasks.map((currTask) => (
+                <Fragment key={currTask.id}>
+                  <TaskItem
+                    task={currTask}
+                    taskCategory={getCategoryById(currTask.todoCategoryId)}
+                    taskPriority={getPriorityById(currTask.todoPriorityId)}
+                    onDelete={() => deleteTask(currTask)}
+                    onUpdate={(newTask) => updateTask(newTask)}
+                  />
+                </Fragment>
+              ))}
+            </ScrollView>
+          )}
+          <Text style={commonStyles.errorText}>{serverError}</Text>
 
-    </View>
+        </View>
+      </PriorityContext.Provider>
+    </CategoryContext.Provider>
   )
 }
 
