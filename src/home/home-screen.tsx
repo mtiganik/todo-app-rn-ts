@@ -1,7 +1,7 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation';
 import React, {useState,useEffect,useContext, Fragment} from 'react'
-import { View, Text, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { UserData, Task, Category, Priority } from '../models';
 import { getAllCategoriesService } from '../service/category-service';
 import { getAllPrioritiesService } from '../service/priority-service';
@@ -67,7 +67,8 @@ const HomeScreen:React.FC<HomeScreenProps> = ({navigation}) => {
     <View>
       <Text>Hello {userData?.firstName} {userData?.lastName}</Text>
       {tasks.length > 0 && categories.length > 0 && priorities.length > 0 && (
-        tasks.map((currTask) => (
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+         {tasks.map((currTask) => (
           <Fragment key={currTask.id}>
             <TaskItem 
             task={currTask} 
@@ -77,8 +78,9 @@ const HomeScreen:React.FC<HomeScreenProps> = ({navigation}) => {
             onUpdate={(newTask) => updateTask(newTask)}            
             />
           </Fragment>
-        ))
-      )}
+        ))}
+        </ScrollView>
+      ) }
       <Text style={commonStyles.errorText}>{serverError}</Text>
 
     </View>
@@ -86,3 +88,9 @@ const HomeScreen:React.FC<HomeScreenProps> = ({navigation}) => {
 }
 
 export default HomeScreen
+
+const styles = StyleSheet.create({
+  scrollViewContent:{
+    paddingBottom: 100
+  }
+})
