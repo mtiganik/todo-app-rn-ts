@@ -33,8 +33,8 @@ const EditTaskScreen: React.FC<EditScreenProps> = ({ task, currCat, currPri, onE
   const priListOptions = priList.map((priority) => ({
     key: priority.id,
     value: priority.priorityName
-  })
-  )
+  }))
+  
   const handlePress = async() => {
     var newTask = task
     newTask.taskName = taskName
@@ -53,13 +53,6 @@ const EditTaskScreen: React.FC<EditScreenProps> = ({ task, currCat, currPri, onE
     }
   }
 
-  const handleSelectCategory = (value: string) => {
-    console.log(value)
-  }
-
-  const handleSelectPriority = (value: string) => {
-    console.log(value)
-  }
   const handleSetDueDt = (value:string) => {
     const dateObject = new Date(value);
     const isoDateString = dateObject.toISOString();  

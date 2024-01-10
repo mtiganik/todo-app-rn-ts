@@ -15,7 +15,7 @@ import { NavigationButton } from './utils/navigation-button';
 
 export type RootStackParamList = {
   Home: undefined;
-  AddTask:undefined;
+  // AddTask:undefined;
   // EditTask:(task:Task) => void;
   Categories: undefined;
   Priorities:undefined
@@ -50,7 +50,7 @@ const Navigation:React.FC = () => {
       <Stack.Navigator>
           <Stack.Screen name="Login" component={LoginScreen} options={{headerBackVisible:false}}/>
           <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="AddTask" component={AddTaskScreen} />
+          {/* <Stack.Screen name="AddTask" component={AddTaskScreen} /> */}
           {/* <Stack.Screen name="EditTask" component={EditTaskScreen} /> */}
           <Stack.Screen name="Categories" component={CategoryScreen} />
           <Stack.Screen name="Priorities" component={PriorityScreen} />

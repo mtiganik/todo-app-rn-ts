@@ -1,7 +1,7 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation';
 import React, {useState,useEffect,useContext, Fragment, createContext} from 'react'
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
 import { UserData, Task, Category, Priority } from '../models';
 import { getAllCategoriesService } from '../service/category-service';
 import { getAllPrioritiesService } from '../service/priority-service';
@@ -11,6 +11,7 @@ import { commonStyles } from '../utils/styles';
 import { getDefaultCategory, getDefaultPriority } from '../utils/default-entities';
 import TaskItem from './task-item';
 import { CategoryContext, PriorityContext } from '../utils/context';
+import AddTaskScreen from './add-task-screen';
 type HomeScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Home'>;
 };
@@ -21,6 +22,7 @@ const HomeScreen:React.FC<HomeScreenProps> = ({navigation}) => {
   const [categories, setCategories] = useState<Category[]>([])
   const [priorities, setPriorities] = useState<Priority[]>([])
   const [serverError, setServerError] = useState("")
+  const [addTaskVisible, setAddTaskVisible] = useState(false)
   useEffect(() => {
     const fetchData = async() => {
       try {
@@ -65,15 +67,25 @@ const HomeScreen:React.FC<HomeScreenProps> = ({navigation}) => {
   const deleteTask = (taskToDelete:Task) => {
     console.log("On delete")
   }
+  const handleAdd = (newTask:Task) => {
+    setTasks([newTask, ...tasks])
+    setAddTaskVisible(false)
+  }
 
   return(
     <CategoryContext.Provider value={categories}>
       <PriorityContext.Provider value={priorities}>
+          <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View>
           <Text>Hello {userData?.firstName} {userData?.lastName}</Text>
+          <Button onPress={() => setAddTaskVisible(!addTaskVisible)} title="Add new"/>
+          {addTaskVisible && (
+            <AddTaskScreen 
+            onAdd={(newTask) => handleAdd(newTask)}
+            />
+          )}
           {tasks.length > 0 && categories.length > 0 && priorities.length > 0 && (
-            <ScrollView contentContainerStyle={styles.scrollViewContent}>
-              {tasks.map((currTask) => (
+              tasks.map((currTask) => (
                 <Fragment key={currTask.id}>
                   <TaskItem
                     task={currTask}
@@ -83,12 +95,12 @@ const HomeScreen:React.FC<HomeScreenProps> = ({navigation}) => {
                     onUpdate={(newTask) => updateTask(newTask)}
                   />
                 </Fragment>
-              ))}
-            </ScrollView>
-          )}
+              ))
+              )}
           <Text style={commonStyles.errorText}>{serverError}</Text>
 
         </View>
+              </ScrollView>
       </PriorityContext.Provider>
     </CategoryContext.Provider>
   )
