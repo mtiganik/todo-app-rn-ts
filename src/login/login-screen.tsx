@@ -83,7 +83,7 @@ return (
       }}
       >
         <Text style={{
-          fontFamily: "sans-serif-condensed",
+          // fontFamily: "sans-serif-condensed",
           fontSize: 30
         }}>Login </Text>
       </View>
